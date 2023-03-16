@@ -29,6 +29,7 @@ app.get("/" , (req,res)=>{
 app.get("/messaging-webhook", (req, res) => {
   
   console.log(req.query)
+  console.log(req.body)
 
     let mode = req.query["hub.mode"];
     let token = req.query["hub.verify_token"];
