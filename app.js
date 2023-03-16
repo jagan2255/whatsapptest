@@ -69,7 +69,7 @@ app.post("/webhook" , (req,res)=>{
 
                 axios({
                   method:"POST",
-                  url:"https://graph.facebook.com/v13.0/"+phon_no_id+"/messages?access_token="+token,
+                  url:"https://graph.facebook.com/v16.0/"+phon_no_id+"/messages?access_token="+token,
                   data:{
                       messaging_product:"whatsapp",
                       to:from,
@@ -90,7 +90,7 @@ app.post("/webhook" , (req,res)=>{
 
                axios({
                    method:"POST",
-                   url:"https://graph.facebook.com/v13.0/"+phon_no_id+"/messages?access_token="+token,
+                   url:"https://graph.facebook.com/v16.0/"+phon_no_id+"/messages?access_token="+token,
                    data:{
                        messaging_product:"whatsapp",
                        to:from,
