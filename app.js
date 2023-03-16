@@ -24,6 +24,9 @@ app.get("/" , (req,res)=>{
     res.send(`Server Running on ${PORT}`)
 })
 
+var config={
+  verifytoken : "EAAIlHSI1aqsBABfjZCmGY1Inl2JZAkTN9XsfzvPZAJIa9wxvyDolnyfCBdvQpeMwcMpMzErHRNimQ52cXoFJkMX1tSsuF83mpzjEzRPc0kL0ZAfwUU3MIfTGhmNOGQZBkmt5b827y71kDTjTjXLjVILgasZAz1UV4bWe8l6dOHmYuOZAEuLZCqP4I3iE5FWRPMhoZA2xoNLfekAZDZD"
+}
 
 app.get("/messaging-webhook", (req, res) => {
   
@@ -36,7 +39,7 @@ app.get("/messaging-webhook", (req, res) => {
     // Check if a token and mode is in the query string of the request
     if (mode && token) {
       // Check the mode and token sent is correct
-      if (mode === "subscribe" && token === config.verifyToken) {
+      if (mode === "subscribe" && token === config.verifytoken) {
         // Respond with the challenge token from the request
         console.log("WEBHOOK_VERIFIED");
         res.status(200).send(challenge);
