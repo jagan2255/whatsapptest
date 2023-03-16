@@ -80,6 +80,10 @@ app.post("/webhook" , (req,res)=>{
                   headers:{
                       "Content-Type":"application/json"
                   }
+              }).then((res)=>{
+                console.log(res)
+              }).catch((err)=>{
+                console.log(err.message)
               });
 
                }else{
@@ -97,7 +101,11 @@ app.post("/webhook" , (req,res)=>{
                    headers:{
                        "Content-Type":"application/json"
                    }
-               });
+               }).then((res)=>{
+                console.log(res)
+              }).catch((err)=>{
+                console.log(err.message)
+              });
               }
 
                res.sendStatus(200);
