@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const twilio = require('twilio');
 const cors=require("cors");
+const axios = require('axios');
 
 require('dotenv').config()
 
@@ -58,12 +59,13 @@ app.post("/webhook" , (req,res)=>{
                var phon_no_id=body_param.entry[0].changes[0].value.metadata.phone_number_id;
                var from = body_param.entry[0].changes[0].value.messages[0].from; 
                var msg_body = body_param.entry[0].changes[0].value.messages[0].text.body;
+               msg_body = msg_body.toLowerCase()
 
                console.log("phone number "+phon_no_id);
                console.log("from "+from);
                console.log("boady param "+msg_body);
 
-               if(msg_body === "Products"){
+               if(msg_body === "products"){
 
                 axios({
                   method:"POST",
