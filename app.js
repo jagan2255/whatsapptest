@@ -3,7 +3,6 @@ const app = express();
 const twilio = require('twilio');
 const cors=require("cors");
 
-
 require('dotenv').config()
 
 app.use(express.json());
@@ -12,10 +11,9 @@ app.use(cors());
 
 const PORT = process.env.PORT || 3000;
 
-
-const accountSid = process.env.AccountSID;
-const authToken = process.env.AuthToken;
-const client = twilio(accountSid, authToken);
+// const accountSid = process.env.AccountSID;
+// const authToken = process.env.AuthToken;
+// const client = twilio(accountSid, authToken);
 
 // console.log(authToken)
 
@@ -24,38 +22,98 @@ app.get("/" , (req,res)=>{
     res.send(`Server Running on ${PORT}`)
 })
 
+var mytoken = process.env.mytoken
 
+app.get("/webhook", (req, res) => {
 
-app.get("/messaging-webhook", (req, res) => {
+    console.log(req.query)
+
+    var mode = req.query["hub.mode"];
+    var token = req.query["hub.verify_token"];
+    var challenge = req.query["hub.challenge"];
   
-  console.log(req.query)
-
-    let mode = req.query["hub.mode"];
-    let token = req.query["hub.verify_token"];
-    let challenge = req.query["hub.challenge"];
-  
-    // Check if a token and mode is in the query string of the request
     if (mode && token) {
-      // Check the mode and token sent is correct
-      if (mode === "subscribe") {
-        // Respond with the challenge token from the request
+      if (mode === "subscribe" & token === mytoken) {
         console.log("WEBHOOK_VERIFIED");
         res.status(200).send(challenge);
       } else {
-        // Respond with '403 Forbidden' if verify tokens do not match
         res.sendStatus(403);
       }
     }
   });
 
 
-app.post("/whatsappapi" , (req,res)=>{
+app.post("/webhook" , (req,res)=>{
 
-  console.log(req.body)
- 
-    res.send('hub.challenge');
+    var body_param=req.body;
+    var token = process.env.Token
+    console.log(JSON.stringify(body_param,null,2));
 
-})
+    if(body_param.object){
+        if(body_param.entry && 
+            body_param.entry[0].changes && 
+            body_param.entry[0].changes[0].value.messages && 
+            body_param.entry[0].changes[0].value.messages[0]  
+            ){
+               var phon_no_id=body_param.entry[0].changes[0].value.metadata.phone_number_id;
+               var from = body_param.entry[0].changes[0].value.messages[0].from; 
+               var msg_body = body_param.entry[0].changes[0].value.messages[0].text.body;
+
+               console.log("phone number "+phon_no_id);
+               console.log("from "+from);
+               console.log("boady param "+msg_body);
+
+               if(msg_body === "Products"){
+
+                axios({
+                  method:"POST",
+                  url:"https://graph.facebook.com/v13.0/"+phon_no_id+"/messages?access_token="+token,
+                  data:{
+                      messaging_product:"whatsapp",
+                      to:from,
+                      text:{
+                          body:"Groceries,clothing,footware"
+                      }
+                  },
+                  headers:{
+                      "Content-Type":"application/json"
+                  }
+              });
+
+               }else{
+
+               axios({
+                   method:"POST",
+                   url:"https://graph.facebook.com/v13.0/"+phon_no_id+"/messages?access_token="+token,
+                   data:{
+                       messaging_product:"whatsapp",
+                       to:from,
+                       text:{
+                           body:"Hi welcome to Jv online store"
+                       }
+                   },
+                   headers:{
+                       "Content-Type":"application/json"
+                   }
+               });
+              }
+
+               res.sendStatus(200);
+            }else{
+                res.sendStatus(404);
+            }
+    }
+});
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -162,6 +220,10 @@ if (message in commands) {
   
     
     });
+
+
+
+
 
 
 
