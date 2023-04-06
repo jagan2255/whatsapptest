@@ -12,8 +12,14 @@ app.use(cors());
 
 const PORT = process.env.PORT || 3000;
 
-const OpenAI = require('openai-api');
-const openai = new OpenAI(process.env.openapikey);
+
+const { Configuration, OpenAIApi } = require("openai");
+const configuration = new Configuration({
+  apiKey: process.env.openapikey,
+});
+const openai = new OpenAIApi(configuration);
+
+
 
 
 // const accountSid = process.env.AccountSID;
@@ -23,8 +29,20 @@ const openai = new OpenAI(process.env.openapikey);
 // console.log(authToken)
 
 
-app.get("/" , (req,res)=>{
-    res.send(`Server Running on ${PORT}`)
+app.get("/" ,async (req,res)=>{
+
+  
+  const response = await openai.createCompletion({
+    model: "text-davinci-003",
+    prompt: "Say this is a test",
+    temperature: 0,
+    max_tokens: 7,
+  }).then((res)=>{
+    res.send(`Server Running on ${res}`)
+  }).catch((err)=>{
+  res.send(err.message)
+});
+    
 })
 
 var mytoken = process.env.mytoken
@@ -91,12 +109,19 @@ app.post("/webhook" , async(req,res)=>{
               });
 
                }else{
+      
+                var messages22;
 
+                const response = await openai.createCompletion({
+                  model: "text-davinci-003",
+                  prompt: "Say this is a test",
+                  temperature: 0,
+                  max_tokens: 7,
+                }).then((res)=>{
+                  messages22 = res
+                }).catch((err)=>{
+                  messages22 = err
 
-                const gptResponse = await openai.search({
-                  engine: 'davinci',
-                  documents: ["White House", "hospital", "school"],
-                  query: "the president"
               });
 
                axios({
@@ -106,7 +131,7 @@ app.post("/webhook" , async(req,res)=>{
                        messaging_product:"whatsapp",
                        to:from,
                        text:{
-                           body:gptResponse.data
+                           body:messages22
                        }
                    },
                    headers:{
