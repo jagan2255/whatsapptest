@@ -12,6 +12,10 @@ app.use(cors());
 
 const PORT = process.env.PORT || 3000;
 
+const OpenAI = require('openai-api');
+const openai = new OpenAI(process.env.openapikey);
+
+
 // const accountSid = process.env.AccountSID;
 // const authToken = process.env.AuthToken;
 // const client = twilio(accountSid, authToken);
@@ -44,7 +48,7 @@ app.get("/webhook", (req, res) => {
   });
 
 
-app.post("/webhook" , (req,res)=>{
+app.post("/webhook" , async(req,res)=>{
 
     var body_param=req.body;
     var token = process.env.Token
@@ -88,6 +92,13 @@ app.post("/webhook" , (req,res)=>{
 
                }else{
 
+
+                const gptResponse = await openai.search({
+                  engine: 'davinci',
+                  documents: ["White House", "hospital", "school"],
+                  query: "the president"
+              });
+
                axios({
                    method:"POST",
                    url:"https://graph.facebook.com/v16.0/"+phon_no_id+"/messages?access_token="+token,
@@ -95,7 +106,7 @@ app.post("/webhook" , (req,res)=>{
                        messaging_product:"whatsapp",
                        to:from,
                        text:{
-                           body:"Hi welcome to Jv online store"
+                           body:gptResponse.data
                        }
                    },
                    headers:{
